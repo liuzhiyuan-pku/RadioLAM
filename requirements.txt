@@ -1,0 +1,8 @@
+accelerate==1.6.0
+lion_pytorch==0.2.3
+opencv_python==4.11.0.86
+pytorch_msssim==1.0.0
+torch==2.1.2+cu118
+torchvision==0.16.2+cu118
+tqdm==4.64.1
+ypstruct==0.0.2
