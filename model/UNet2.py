@@ -66,28 +66,23 @@ class CrossAttentionBlock(nn.Module):
         """
         b, c, h, w = x.shape
 
-        # 将特征向量扩展为序列形式
         context = context.unsqueeze(1)  # [b, 1, emb_dim]
 
-        # 投影输入特征
         x_in = self.proj_in(x)  # [b, emb_dim, h, w]
         x_in = rearrange(x_in, 'b c h w -> b (h w) c')  # [b, h*w, emb_dim]
 
-        # 计算Q, K, V
         Q = self.Wq(x_in)  # [b, h*w, emb_dim]
         K = self.Wk(context)  # [b, 1, emb_dim]
         V = self.Wv(context)  # [b, 1, emb_dim]
 
-        # 计算注意力权重
         att_weights = torch.einsum('bid,bjd->bij', Q, K) * self.scale  # [b, h*w, 1]
         att_weights = F.softmax(att_weights, dim=-1)
 
-        # 应用注意力
         out = torch.einsum('bij,bjd->bid', att_weights, V)  # [b, h*w, emb_dim]
         out = rearrange(out, 'b (h w) c -> b c h w', h=h, w=w)  # [b, emb_dim, h, w]
         out = self.proj_out(out)  # [b, c, h, w]
 
-        return out + x  # 残差连接
+        return out + x
 
 
 
@@ -295,7 +290,6 @@ class UNet_with_cond(nn.Module):
                 x = encoder[index](x, pe)
                 tmp_outs.append(x)
 
-            # 在编码器块后应用交叉注意力
             if self.feature_dim > 0:
                 x = self.cross_attns[cross_attn_idx](x, features)
                 cross_attn_idx += 1
@@ -306,7 +300,6 @@ class UNet_with_cond(nn.Module):
 
         x = self.mid(x, pe)
 
-        # 在中间层应用交叉注意力
         if self.feature_dim > 0:
             x = self.mid_cross_attn(x, features)
 

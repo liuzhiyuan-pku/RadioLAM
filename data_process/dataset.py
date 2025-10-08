@@ -332,31 +332,6 @@ def get_dataloader(type,
 
 
 
-def get_val_dataloader(batch_size,
-                       sparse_num,
-                   dist_train=False,
-                   num_workers=18):
-    # Create indices for training and validation sets
-    val_indices = list(range(1300, 1576))
-    dataset = SpectrumNetDataset(dataset_path=SpectrumNetDatasetPath, indices=val_indices, sparse_num=sparse_num)
-
-    if dist_train:
-        sampler = DistributedSampler(dataset)
-        dataloader = DataLoader(dataset,
-                                batch_size=batch_size,
-                                sampler=sampler,
-                                num_workers=num_workers,
-                                prefetch_factor=4)
-        return dataloader, sampler
-    else:
-        dataloader = DataLoader(dataset,
-                                batch_size=batch_size,
-                                shuffle=True,
-                                num_workers=num_workers,
-                                prefetch_factor=4)
-    return dataloader
-
-
 def getdata(n, sparse_num, point_cloud_height = 'mix'):
     dataset_path = SpectrumNetDatasetPath
     with open(os.path.join(dataset_path,"index.txt"),'r') as f:

@@ -107,20 +107,19 @@ def get_transmitter_info_fast(transmitter_pos, point_cloud):
     
     init_val = np.ones(transmitter_pos.shape[0]) * 10
     try:
-        # 提供雅可比并调整优化参数
         result = least_squares(
             func_p, 
             init_val, 
             jac=jac_p, 
             bounds=(0, np.inf), 
-            method='trf',  # 信任区域反射法，支持边界
-            xtol=1e-6,    # 调整容差以平衡速度与精度
+            method='trf',
+            xtol=1e-6,
             ftol=1e-6,
-            max_nfev=200  # 限制最大评估次数
+            max_nfev=200
         )
         root = result.x
     except Exception as e:
-        print("!!! least_squares报错，使用默认参数 !!!")
+        print("!!! least_squares ERROR，use default value !!!")
         print(e)
         root = np.ones(transmitter_pos.shape[0]) * 10
     
